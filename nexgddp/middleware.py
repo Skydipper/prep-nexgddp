@@ -67,12 +67,12 @@ def get_tile_attrs(func):
         layer_config = layer_object.get('layerConfig', None)
         dataset = layer_object.get('dataset', None)
         logging.debug(f'dataset: {dataset}')
-        
+
         logging.debug('Obtaining style')
         layer_style = layer_config.get('colorRamp')
         logging.debug(layer_style)
         kwargs["style"] = layer_style
-        
+
         logging.debug('Obtaining year')
         # year = layer_config.get('year')
         # logging.debug(f'year: {year}')
@@ -81,14 +81,13 @@ def get_tile_attrs(func):
         indicator = layer_config.get('indicator')
         logging.debug(f'indicator: {indicator}')
         kwargs["indicator"] = indicator
-  
+
         logging.debug('Obtaining scenario and model')
         dataset_object = DatasetService.get(dataset)
         tablename = dataset_object.get('tableName', None)
         logging.debug(f'tablename: {tablename}')
         kwargs['model'] = tablename.split('/')[1]
         kwargs['scenario'] = tablename.split('/')[0]
-
 
         is_comparison = layer_config.get('compareWith')
         logging.debug(f"is_comparison: {is_comparison}")
@@ -119,7 +118,7 @@ def get_diff_attrs(func):
         tablename_a =  '_'.join(dataset_object_a.get('tableName').split('/')) + '_processed'
         logging.debug(tablename_a)
         kwargs["dset_a"] = tablename_a
-        
+
         dset_b = request.get_json().get('dset_b')
         if dset_b:
             dataset_object_b = DatasetService.get(dset_b)
@@ -146,7 +145,7 @@ def get_diff_attrs(func):
         varnames = request.get_json().get('varnames')
         logging.debug(f'varnames: {varnames}')
         kwargs["varnames"] = varnames
-        
+
         return func(*args, **kwargs)
     return wrapper
 
@@ -189,7 +188,7 @@ def is_microservice(func):
     """Get geodata"""
     @wraps(func)
     def wrapper(*args, **kwargs):
-        logging.debug("Checking microservice user")        
+        logging.debug("Checking microservice user")
         logged_user = json.loads(request.args.get("loggedUser", None))
         if logged_user.get("id") == "microservice":
             logging.debug("is microservice");

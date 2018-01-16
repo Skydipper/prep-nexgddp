@@ -10,6 +10,7 @@ from requests import Request, Session
 from requests.exceptions import ConnectTimeout
 from nexgddp.errors import SqlFormatError, PeriodNotValid, TableNameNotValid, GeostoreNeeded, RasdamanError
 from nexgddp.helpers.gdal_helper import GdalHelper
+# from nexgddp.helpers.requests_helper import requests_retry_session
 from nexgddp.helpers.coloring_helper import ColoringHelper
 from nexgddp.services.xml_service import XMLService
 from CTRegisterMicroserviceFlask import request_to_microservice
@@ -98,7 +99,7 @@ class QueryService(object):
                 # Removing the raster
                 os.remove(os.path.join('/tmp', raster_filename))
         return map(float, processed_data)
-    
+
     @staticmethod
     def get_all_data(scenario, model, years, bbox):
         logging.info('[QueryService] Getting * data from rasdaman')
@@ -138,7 +139,7 @@ class QueryService(object):
 
                 processed_obj = list(map(lambda x: dict(zip(varnames, x)), data_array))
                 # logging.debug(processed_obj)
-                    
+
                 for i in range(len(years)):
                     results[i]['year'] = dateutil.parser.parse(f"{years[i]}-01-01").isoformat()
                     results[i].update(processed_obj[i])
@@ -200,7 +201,7 @@ class QueryService(object):
         prepped = session.prepare_request(request)
         response = session.send(prepped)
         return response.text
-        
+
     @staticmethod
     def get_tile_query(bbox, year, model, scenario, indicator, bounds):
         logging.info('[QueryService] Forming rasdaman query')
@@ -283,7 +284,7 @@ class QueryService(object):
             ])
 
         logging.debug(query)
-        
+
         envelope_list = [ '<?xml version="1.0" encoding="UTF-8" ?>',
                           '<ProcessCoveragesRequest xmlns="http://www.opengis.net/wcps/1.0" service="WCPS" version="1.0.0">',
                           '<query><abstractSyntax>',
@@ -314,7 +315,7 @@ class QueryService(object):
             f.close()
             return raster_filename
 
-        
+
     @staticmethod
     def get_rasdaman_fields(scenario, model):
         # Need to parse xml
@@ -335,7 +336,7 @@ class QueryService(object):
         session = Session()
         prepped = session.prepare_request(request)
         try:
-            response = session.send(prepped, timeout = 15)
+            response = session.send(prepped, timeout=15)
         except ConnectTimeout:
             raise RasdamanError('Rasdaman not reachable')
         if response.status_code == 404:

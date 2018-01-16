@@ -28,4 +28,3 @@ develop:
 redis:
   image: redis
   restart: always
-

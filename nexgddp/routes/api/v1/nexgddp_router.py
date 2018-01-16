@@ -4,7 +4,6 @@ import pickle
 import os
 from flask import Flask, jsonify, request, send_from_directory, Blueprint, Response, current_app
 from flask_cache import Cache
-#from nexgddp import cache
 from nexgddp.routes.api import error
 from nexgddp.services.query_service import QueryService
 from nexgddp.services.xml_service import XMLService
@@ -35,8 +34,6 @@ cache = Cache(app, config={
     'CACHE_TYPE': 'redis',
     'CACHE_KEY_PREFIX': 'nexgddp_queries',
     'CACHE_REDIS_URL': SETTINGS.get('redis').get('url')
-    
-
 })
 
 def callback_to_dataset(body):
@@ -72,7 +69,7 @@ def get_sql_select(json_sql):
                     'argument': clause.get('value'),
                     'alias': clause.get('alias', None)
                 }
-        
+
         select_functions = list(map(is_function, select_sql))
         select_literals  = list(map(is_literal,  select_sql))
         select = list(filter(None, select_functions + select_literals))
@@ -168,7 +165,7 @@ def get_years_where(where_sql, temporal_resolution):
             lambda date: date.isoformat(),
             [date for date in all_years if date <= parsed[1] and date >= parsed[0]]
         ))
-        
+
 
         if final_years == []:
             raise PeriodNotValid("Supplied dates are invalid")
@@ -246,7 +243,7 @@ def unless_cache_query(*args, **kwargs):
 def query(dataset_id, bbox):
     """NEXGDDP QUERY ENDPOINT"""
     logging.info('[ROUTER] Doing Query of dataset '+dataset_id)
-    
+
     # Get and deserialize
     dataset = request.get_json().get('dataset', None).get('data', None)
     table_name = dataset.get('attributes').get('tableName')
@@ -279,7 +276,7 @@ def query(dataset_id, bbox):
     except TableNameNotValid as e:
         return error(status=404, detail='Table name not valid')
     fields.update({'all': {'type': 'array'}})
-    
+
     # Prior to validating dates, the [max|min](year) case has to be dealt with:
     def is_year(clause):
         if (clause.get('function') == 'max' or  clause.get('function') == 'min') and clause.get('argument') == 'year':
@@ -296,7 +293,7 @@ def query(dataset_id, bbox):
         for element in select:
             result[element['alias'] if element['alias'] else f"{element['function']}({element['argument']})"] = domain.get(element['argument']).get(element['function'])
         return jsonify(data=[result]), 200
-    
+
     if not bbox:
         return error(status=400, detail='No coordinates provided. Include geostore or lat & lon')
     # Get years
@@ -312,7 +309,7 @@ def query(dataset_id, bbox):
     #     years = list(range(
     #         int(dateutil.parser.parse(domain['year']['min'], fuzzy_with_tokens=True)[0].year),
     #         int(dateutil.parser.parse(domain['year']['max'], fuzzy_with_tokens=True)[0].year + 1),
-    #         10 
+    #         10
     #     )) if temporal_resolution == 'decadal' else ['1971', '2021', '2051']
     #     logging.debug(f"years: {years}")
         # return error(status=400, detail='Period of time must be set')
@@ -426,9 +423,9 @@ def get_tile(x, y, z, model, scenario, year, style, indicator, layer, compare_ye
     # Uploading file to storage
     # Beware of side effects!
     # ColoringHelper.colorize stores the color-coded file in the same input file
-    # Uploading file to storage. 
+    # Uploading file to storage.
     StorageService.upload_file(rasterfile, layer, str(z), str(x), str(y), year, compare_year, dset_b)
-    
+
     return colored_response, 200
 
 @nexgddp_endpoints.route('/<layer>/expire-cache', methods=['DELETE'])
@@ -497,7 +494,7 @@ def getInfoIndicator(indicator):
         }, {
             "label": "2081-2090",
             "id": "2081-01-01T00:00:00.000Z"
-        }]        
+        }]
     }, {
         "label": "30 years",
         "id": "30_y",
@@ -511,7 +508,7 @@ def getInfoIndicator(indicator):
             "label": "2051-2080",
             "id": "2051-01-01T00:00:00.000Z"
         }]
-    }] 
+    }]
     return jsonify(body), 200
 
 @nexgddp_endpoints.route('/dataset/<indicator>/<scenario>/<temporal_res>', methods=['GET'])
