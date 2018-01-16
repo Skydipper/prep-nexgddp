@@ -168,6 +168,7 @@ class QueryService(object):
         )
         session = Session()
         prepped = session.prepare_request(request)
+        # response = session.requests_retry_session(session=session).send(prepped)
         response = session.send(prepped)
         if response.status_code == 404:
             raise PeriodNotValid('Period Not Valid')
