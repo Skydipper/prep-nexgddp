@@ -13,7 +13,7 @@ develop:
     CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
     LOCAL_URL: http://mymachine:3078
     API_VERSION: v1
-    RASDAMAN_URL: http://35.169.161.154:8080/rasdaman/ows
+    RASDAMAN_URL: http://54.226.117.123:8080/rasdaman/ows
     REDIS_URL: redis://redis:6379
     GCLOUD_STORAGE: ${GCLOUD_STORAGE}
     GOOGLE_APPLICATION_CREDENTIALS: /opt/nexgddp/storage.json
@@ -24,7 +24,7 @@ develop:
   links:
     - redis
   extra_hosts:
-    - "mymachine:192.168.1.123"
+    - "mymachine:192.168.1.78"
 redis:
   image: redis
   restart: always
